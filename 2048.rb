@@ -32,7 +32,8 @@ blank_grid = [
   [0, 0, 0, 0],
 ]
 
-@grid = blank_grid
+@grid = complex_grid
+@score = 0
 @messages = []
 
 def swap(args)
@@ -65,10 +66,7 @@ def move_left
     row.each_with_index do |value, column_index|
       cell=[row_index, column_index]
       destination = [row_index, column_index - 1]
-      if does_equal(cell, destination)
-        set_value_for_cell(cell, 0)
-        set_value_for_cell(destination, value * 2 )
-      end
+      compare_and_combine(cell: cell, destination: destination, value: value)
     end
   end
 
@@ -94,10 +92,8 @@ def move_right
     row.each_with_index do |value, column_index|
       cell=[row_index, column_index]
       destination = [row_index, column_index + 1]
-      if does_equal(cell, destination)
-        set_value_for_cell(cell, 0)
-        set_value_for_cell(destination, value * 2 )
-      end
+      compare_and_combine(cell: cell, destination: destination, value: value)
+
     end
   end
 
@@ -123,10 +119,7 @@ def move_down
     row.each_with_index do |value, column_index|
       cell=[row_index, column_index]
       destination = [row_index + 1, column_index]
-      if does_equal(cell, destination)
-        set_value_for_cell(cell, 0)
-        set_value_for_cell(destination, value * 2 )
-      end
+      compare_and_combine(cell: cell, destination: destination, value: value)
     end
   end
 
@@ -152,10 +145,7 @@ def move_up
     row.each_with_index do |value, column_index|
       cell=[row_index, column_index]
       destination = [row_index - 1, column_index]
-      if does_equal(cell, destination)
-        set_value_for_cell(cell, 0)
-        set_value_for_cell(destination, value * 2 )
-      end
+      compare_and_combine(cell: cell, destination: destination, value: value)
     end
   end
 
@@ -169,6 +159,19 @@ def move_up
     end
   end
 
+end
+
+# example of keyword arguments in ruby
+def compare_and_combine(cell:, destination:, value:)
+  if does_equal(cell, destination)
+    set_value_for_cell(cell, 0)
+    set_value_for_cell(destination, value * 2 )
+    add_to_score(value * 2)
+  end
+end
+
+def add_to_score(number)
+  @score += number
 end
 
 def matrix_is_full?
@@ -302,6 +305,9 @@ def run_game
     end
 
   end
+  system "clear" or system "cls"
+  print_header
+  print_messages
   print_grid
 
   puts "-----------------------------------"
@@ -322,9 +328,17 @@ def print_messages
 end
 
 def print_header
+
+  score = @score.to_s.center(16)
+  score_line = "    [ #{score}]".colorize(color: :red)
+
   puts "\nEnter Q to quit!\n"
   puts "CONTROLS: w, a, d, s"
   puts "---------------------"
+  puts ""
+  puts "    [-----------------]".colorize(color: :red)
+  puts game_is_over? ? score_line.blink : score_line
+  puts "    [-----------------]".colorize(color: :red)
   puts ""
 end
 
