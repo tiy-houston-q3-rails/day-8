@@ -1,5 +1,6 @@
 require 'io/console'
 require 'pry'
+require 'colorize'
 
 
 
@@ -194,7 +195,6 @@ def any_adjacent_pairs?
     row.each_with_index do |column, index|
       if any_adjacent? row_number, index
         found_adjacent = true
-        puts [row_number, index].join(',')
       end
     end
 
@@ -328,15 +328,44 @@ def print_header
   puts ""
 end
 
+def color_hash_for_number(number)
+
+  # [:black, :red, :green, :yellow,
+  # :blue, :magenta, :cyan, :white,
+  # :default, :light_black, :light_red,
+  # :light_green, :light_yellow, :light_blue,
+  # :light_magenta, :light_cyan, :light_white]
+  text       = :black
+  background = {
+    0 => :light_black,
+    2 => :light_yellow,
+    4 => :yellow,
+    8 => :light_cyan,
+    16 =>:cyan,
+    32 =>:light_green,
+    64 =>:green,
+    128=>:light_magenta,
+    256=>:magenta,
+    512=>:light_blue,
+    1024=>:blue,
+    2048=>:red
+  }[number]
+
+  return {color: text, background: background}
+end
+
 def print_grid
 
 
 
   @grid.each do |row|
     row.each do |i|
+
       value_to_show = i.to_s
       value_to_show = "" if i == 0
-      printf "|%6s|", value_to_show
+
+      colored_value = value_to_show.center(4).colorize(color_hash_for_number(i))
+      print "|#{colored_value}|"
     end
     print "\n"
   end
