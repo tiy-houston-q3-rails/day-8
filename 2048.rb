@@ -46,15 +46,116 @@ def set_value_for_cell(cell, value)
   row[column] = value
 end
 
+def move_left
+
+  columns = [0, 1, 2]
+  rows = [0, 1, 2, 3]
+
+  # combine down errthing
+  @grid.each_with_index do |row, row_index|
+    row.each_with_index do |value, column_index|
+      cell=[row_index, column_index]
+      destination = [row_index, column_index - 1]
+      if does_equal(cell, destination)
+        set_value_for_cell(cell, 0)
+        set_value_for_cell(destination, value * 2 )
+      end
+    end
+  end
+
+  3.times do
+    columns.each do |column_number|
+      rows.each do |row_number|
+        if value_at([row_number, column_number]) == 0
+          swap(position: [row_number,column_number + 1], destination: [row_number,column_number])
+        end
+      end
+    end
+  end
+
+end
+
+def move_right
+
+  columns = [3, 2, 1]
+  rows = [0, 1, 2, 3]
+
+  # combine down errthing
+  @grid.each_with_index do |row, row_index|
+    row.each_with_index do |value, column_index|
+      cell=[row_index, column_index]
+      destination = [row_index, column_index + 1]
+      if does_equal(cell, destination)
+        set_value_for_cell(cell, 0)
+        set_value_for_cell(destination, value * 2 )
+      end
+    end
+  end
+
+  3.times do
+    columns.each do |column_number|
+      rows.each do |row_number|
+        if value_at([row_number, column_number]) == 0
+          swap(position: [row_number,column_number -1], destination: [row_number,column_number])
+        end
+      end
+    end
+  end
+
+end
+
 def move_down
 
   columns = [0, 1, 2, 3]
   rows = [3, 2, 1]
 
-  columns.each do |column_number|
-    rows.each do |row_number|
-      if value_at([row_number, column_number]) == 0
-        swap(position: [row_number-1,column_number], destination: [row_number,column_number])
+  # combine down errthing
+  @grid.each_with_index do |row, row_index|
+    row.each_with_index do |value, column_index|
+      cell=[row_index, column_index]
+      destination = [row_index + 1, column_index]
+      if does_equal(cell, destination)
+        set_value_for_cell(cell, 0)
+        set_value_for_cell(destination, value * 2 )
+      end
+    end
+  end
+
+  3.times do
+    columns.each do |column_number|
+      rows.each do |row_number|
+        if value_at([row_number, column_number]) == 0
+          swap(position: [row_number-1,column_number], destination: [row_number,column_number])
+        end
+      end
+    end
+  end
+
+end
+
+def move_up
+
+  columns = [0, 1, 2, 3]
+  rows = [0, 1, 2]
+
+  # combine down errthing
+  @grid.each_with_index do |row, row_index|
+    row.each_with_index do |value, column_index|
+      cell=[row_index, column_index]
+      destination = [row_index - 1, column_index]
+      if does_equal(cell, destination)
+        set_value_for_cell(cell, 0)
+        set_value_for_cell(destination, value * 2 )
+      end
+    end
+  end
+
+  3.times do
+    columns.each do |column_number|
+      rows.each do |row_number|
+        if value_at([row_number, column_number]) == 0
+          swap(position: [row_number + 1,column_number], destination: [row_number,column_number])
+        end
       end
     end
   end
@@ -159,36 +260,15 @@ end
 
 def apply_move_to_grid(move)
 
-  acceptable = %w(t d l r)
-  if acceptable.include?(move)
+  case move.downcase
+  when 'w' then move_up
+  when 'a' then move_left
+  when 'd' then move_right
+  when 's' then move_down
 
-
-      # check if any adjacent-down can be combined
-      # for-each cell in grid, check value of down
-      #   if value == grid's value
-      #     set destination to value * 2
-      #     set position to 0
-
-    # combine down errthing
-    @grid.each_with_index do |row, row_index|
-      row.each_with_index do |value, column_index|
-        cell=[row_index, column_index]
-        destination = [row_index + 1, column_index]
-        if does_equal(cell, destination)
-          set_value_for_cell(cell, 0)
-          set_value_for_cell(destination, value * 2 )
-        end
-      end
-    end
-    3.times do
-      move_down
-    end
-    add_random_to_grid
-
-  elsif move == "Q"
-    exit()
+  when 'q' then exit
   else
-    puts "Sorry, please enter one of #{acceptable}"
+    puts "Sorry, please enter one of w, a, d, s"
   end
 end
 
@@ -200,6 +280,7 @@ def run_game
     print_grid
     move = STDIN.getch
     apply_move_to_grid(move)
+    add_random_to_grid
 
   end
   print_grid
@@ -218,6 +299,9 @@ def print_grid
 
 
   puts "\nEnter Q to quit!\n"
+  puts "CONTROLS: w, a, d, s"
+  puts "---------------------"
+  puts ""
   @grid.each do |row|
     row.each do |i|
       value_to_show = i.to_s
