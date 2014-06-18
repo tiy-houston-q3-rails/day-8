@@ -32,6 +32,7 @@ blank_grid = [
 ]
 
 @grid = blank_grid
+@messages = []
 
 def swap(args)
   position = args[:position]
@@ -275,7 +276,9 @@ def apply_move_to_grid(move)
 
   when 'q' then exit
   else
-    puts "Sorry, please enter one of w, a, d, s"
+    # we need to show this message,
+    # after the screen has been cleared
+    @messages <<  "Sorry, please enter one of w, a, d, s"
   end
 end
 
@@ -287,6 +290,8 @@ def run_game
 
   until game_is_over?
     system "clear" or system "cls"
+    print_header
+    print_messages
     print_grid
     move = STDIN.getch
 
@@ -309,13 +314,24 @@ def run_game
 
 end
 
-def print_grid
+def print_messages
+  @messages.each do |message|
+    puts "*** -> #{message}"
+  end
+  @messages = []
+end
 
-
+def print_header
   puts "\nEnter Q to quit!\n"
   puts "CONTROLS: w, a, d, s"
   puts "---------------------"
   puts ""
+end
+
+def print_grid
+
+
+
   @grid.each do |row|
     row.each do |i|
       value_to_show = i.to_s
