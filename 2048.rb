@@ -24,7 +24,14 @@ expected = [
   [0, 8, 2, 0],
 ]
 
-@grid = addition_grid
+blank_grid = [
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+]
+
+@grid = blank_grid
 
 def swap(args)
   position = args[:position]
@@ -274,13 +281,20 @@ end
 
 def run_game
 
+  2.times do
+    add_random_to_grid
+  end
 
   until game_is_over?
     system "clear" or system "cls"
     print_grid
     move = STDIN.getch
+
+    original_grid_values = @grid.flatten
     apply_move_to_grid(move)
-    add_random_to_grid
+    if original_grid_values != @grid.flatten
+      add_random_to_grid
+    end
 
   end
   print_grid
