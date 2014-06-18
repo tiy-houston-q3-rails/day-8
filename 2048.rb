@@ -1,12 +1,30 @@
 require 'io/console'
 require 'pry'
 
-@grid = [
+
+
+complex_grid = [
   [2048, 64, 8, 512],
   [512, 8, 4, 128],
   [32, 2, 1024, 8],
   [0, 8, 2, 0]
 ]
+
+addition_grid = [
+  [4, 8, 0, 0],
+  [4, 4, 2, 0],
+  [4, 4, 0, 0],
+  [4, 0, 0, 0],
+]
+
+expected = [
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 8, 2, 0],
+]
+
+@grid = addition_grid
 
 def swap(args)
   position = args[:position]
@@ -77,10 +95,14 @@ def any_adjacent_pairs?
 end
 
 def add_random_to_grid
-  #add either 2 or 4 to a random open square
-
-  value_to_add = [2,4].sample
-
+  # forcing 2's to appear more frequently than 4
+  # ternary operator
+  # if rand() > .6667
+  #   2
+  # else
+  #   4
+  # end
+  value_to_add = rand() < 0.6667 ? 2 : 4
 
   chosen_cell = open_cells.sample
   if chosen_cell
@@ -140,7 +162,27 @@ def apply_move_to_grid(move)
   acceptable = %w(t d l r)
   if acceptable.include?(move)
 
-    move_down
+
+      # check if any adjacent-down can be combined
+      # for-each cell in grid, check value of down
+      #   if value == grid's value
+      #     set destination to value * 2
+      #     set position to 0
+
+    # combine down errthing
+    @grid.each_with_index do |row, row_index|
+      row.each_with_index do |value, column_index|
+        cell=[row_index, column_index]
+        destination = [row_index + 1, column_index]
+        if does_equal(cell, destination)
+          set_value_for_cell(cell, 0)
+          set_value_for_cell(destination, value * 2 )
+        end
+      end
+    end
+    3.times do
+      move_down
+    end
     add_random_to_grid
 
   elsif move == "Q"
